@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>자바스크립트 변수 학습하기</title>
+
+<script>
+let x;  // 전역변수 생성
+
+function f() {
+	let y;  // 지역변수 생성
+	
+	x = 10;
+	y = 20;
+	z = 30;  // 전역변수 생성. 함수 외부에서 var z = 30으로 작성한 것과 비슷(변경 가능). let은 함수 내부에서 재할당(y가 두개가 됨)이 가능해서 var와 더 유사
+	
+	if (y == 20) {
+		let b = 40;  // 블록변수 생성
+		b++;
+		document.write("b의 값은? " + b);
+		document.write("<br>");
+	}  // 블록변수 소멸
+	
+	document.write("y값은? " + y);
+	document.write("<br>");
+}  // 지역변수 소멸
+
+f();
+z = 10;
+document.write("x값은? " + x);
+document.write("<br>");
+document.write("z값은? " + z);
+
+// b의 값은? 41
+// y값은? 20
+// x값은? 10
+// z값은? 30
+		
+</script>
+</head>
+<body>
+
+</body>
+</html>

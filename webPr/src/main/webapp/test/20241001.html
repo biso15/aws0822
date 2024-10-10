@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>if문, for문</title>
+</head>
+<body>
+<script>
+//문제
+/* 영어 점수가 90정 이상이면 A
+점수가 80점 이상이면 B
+점수가 70점 이상이면 C
+점수가 60점 이상이면 D
+점수가 60점 미만이면 F
+나타나는 코드를 작성하시오 */
+
+/* let eng = prompt("점수를 입력하세요","");
+if (eng >= 90) {
+	document.write("A");
+} else if (eng >= 80) {
+	document.write("B");
+} else if (eng >= 70) {
+	document.write("C");
+} else if (eng >= 60) {
+	document.write("D");
+} else {
+	document.write("F");
+} */
+
+
+//조건식2 switch문
+//수학점수 math가 90점 이상이면 우수
+//수학점수 math가 80점 이상이면 보통
+//수학점수 math가 70점 이상이면 미흡
+//수학점수 math가 60점 이상이면 저조
+//수학점수 math가 60점 미만이면 모름
+//이라고 weitch case문을 통해서 작성하시오
+
+/* switch() {
+
+case 값:
+	
+case 값:
+
+default:
+	
+} */
+
+let math;
+//math = prompt("수학점수를 입력해주세요","");
+
+switch(math) {
+	case "90":
+		document.write("우수");
+		break;
+	case "80":
+		document.write("보통");
+		break;
+	case "70":
+		document.write("미흡");
+		break;
+	case "60":
+		document.write("우수");
+		break;
+	default: 
+		document.write("모름");
+		break;
+}
+
+document.write("<br>");
+
+//입력한 요일에 따라서 정상영업인지 아닌지를 출력하세요
+//월~금 : 정상영업, 토~일 : 휴무
+
+let day;
+//day = prompt("요일을 입력하세요","");
+
+switch(day) {
+case "월":
+case "화":
+case "수":
+case "목":
+case "금":
+	 document.write("정상영업");
+	 break;
+case "토":
+case "일":
+	 document.write("휴일");
+	 break;
+}
+
+document.write("<br>");
+
+//for문 학습하기
+
+//형식
+/* for(초기식; 조건식; 증가식) {
+	
+} */
+
+//1에서 10까지의 수를 출력하세요
+
+for(let i = 0; i <= 10; i++) {
+	document.write(i);
+	document.write("<br>");
+}
+
+//1에서 11까지의 합을 구해서 결과를 출력해주세요
+
+/* let sum = 0;
+for(let i = 1; i <= 11; i++) {
+	sum += i;
+}
+document.write(sum);
+document.write("<br>"); */
+
+// while 이용해서 반복문 만들기
+
+// 형식
+/* 초기식;
+while(조건식) {
+	
+	증가식;
+}
+ */
+ 
+ let i = 1;
+ let total = 0;
+ while(i<=11) {
+	 total += i;	 
+	 i++;
+ }
+ document.write("while문을 이용한 합: " + total);
+ document.write("<br>");
+
+// 1에서 100까지의 수중에 홀수의 합을 구하시오
+let addSum = 0;
+for(let i = 1; i <= 100; i++) {
+	// document.write("for문 안에 들어왔음");  // 디버깅
+	if (i % 2 == 0) {
+		// document.write("if문 안에 들어왔음");  // 디버깅
+		continue;
+	}
+	// document.write("더해지는 값 : " + i);  // 디버깅
+ 	addSum += i;
+}
+document.write(addSum);
+document.write("<br>");
+
+// 반복문 3번째 do while문
+
+// 형식
+/* 초기식
+do {
+	증가식
+} while(조건식); */
+ 
+// 일단 한번은 수행하고 조건식을 수행하세요라는 뜻
+
+let k = 0;
+do {
+	document.write("순서번호 입니다 : " + k);
+	document.write("<br>");
+	k++;
+} while(k < -1);
+
+document.write("<br>");
+
+// 이중 for문 사용하기 : for문 안에 for문이 존재한다
+
+/* for (초기식;조건식;증감식) {
+	for (초기식;조건식;증감식) {
+		
+	}
+} */
+
+// 별 그리기
+for (let i = 0; i < 5; i++) {
+	let star = "";
+	for (let x = 0; x <= i; x++) {
+		document.write("☆");
+	}
+	document.write("<br>");
+}
+
+document.write("<br>");
+
+// 정위치에 있는 별을 찍어보기
+for (let i = 0; i < 5; i ++) {
+	for (let k = 4; k > i; k--) {
+		document.write("★");
+	}
+	for (let j = 0; j < i; j++) {
+		document.write("☆");
+	}
+	document.write("<br>");
+}
+
+document.write("<br>");
+
+for (let i = 1; i <= 5; i++) {
+	for (let k = 5 - i; k > 0; k--) {
+		document.write("&nbsp");
+	}
+	for (let j = 1; j <= i*2-1; j++) {
+		document.write("*");
+	}
+	document.write("<br>");
+}
+
+// 1에서 10까지의 수중에 홀수의 합을 구하시오. continue를 사용해서
+
+/* 1. 반복문 만들기
+2. 그 안에 조건식 생성
+3. 누적연산 */
+
+let sum = 0;
+for (let i = 0; i < 10; i++) {
+	if (i % 2 == 0) {
+		continue;
+	}
+	sum += i;
+}
+
+document.write("홀수의 합은? " + sum);
+document.write("<br>");
+
+let sum2 = 0;
+for (let i = 0; i < 10; i++) {
+	if (i % 2 == 0) {
+		sum2 += i;
+	}
+}
+
+document.write("짝수의 합은? " + sum2);
+document.write("<br>");
+
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html style="height: 100%;">
+<head>
+<meta charset="UTF-8">
+<title>백그라운드 이미지 만들기</title>
+<style>
+div {
+	border: 1px solid blue;
+}
+
+span {
+	display: inline-block;
+	width: 100px;
+	height: 100px;
+}
+
+div div {
+	display: inline;
+}
+</style>
+</head>
+<body style="background-image: url(../image/rose.jpg); background-repeat: repeat-x; background-size: 200px; background-position: bottom;">
+	<p style="cursor: crosshair">커서모양 확인하기</p>
+	<p style="cursor: help">커서모양 확인하기</p>
+	<p style="cursor: pointer">커서모양 확인하기</p>
+	<p style="cursor: progress">커서모양 확인하기</p>
+	<p style="cursor: n-resize">커서모양 확인하기</p>
+	
+	<div><span>안녕</span>하세요</div>
+	
+	<div>
+		평소 컴퓨터에 관심이 있었던 차에 저는 진로를 선택함에 있어서
+		<div>프로그래밍 분야</div>에 많은 <div>흥미</div>를 느껴서 이 분야에 활동하고자
+		학습에 지원하게 되었다
+	</div>
+</body>
+</html>

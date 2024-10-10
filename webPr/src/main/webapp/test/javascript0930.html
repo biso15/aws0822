@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>자바스크립트연습 1일차</title>
+</head>
+<body>
+
+<h3>마우스 올려보세요</h3>
+<hr>
+<img src="../image/apple.png" alt="과일" title="이미지보임" onmouseover="this.src='../image/banana.png'" onmouseout="this.src='../image/apple.png'">
+
+<img src="../image/apple.png" alt="과일" onmouseover="over(this);" onmouseout="out(this);">
+
+<script>
+document.write("안녕하세요");
+
+alert("경고창을 띄웁니다.");
+
+document.write("<p style='font-size: 30px; color: red;'>글자크기 30px</p>");
+
+document.write("<a href='javascript:alert(\"클릭했나요?\")'>네이버가기</a>");
+
+document.write("<br>");
+
+let value = prompt("이름을 입력하세요", "황동석");
+
+if (value == null) {
+	document.write("null입니다.");  // 취소를 눌렀을 때
+} else if (value == "") {
+	document.write("빈값입니다.");
+} else {
+	document.write(value);
+}
+
+document.write("<br>");
+
+let val = confirm("전송할까요 ?");
+if (val == true) {
+	document.write("네");
+} else {
+	document.write("아니오");
+}
+
+
+function over(img) {
+	img.src="../image/banana.png";
+}
+
+function out(img) {
+	img.src="../image/apple.png";
+}
+</script>
+</body>
+</html>

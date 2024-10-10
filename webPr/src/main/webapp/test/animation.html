@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>애니메이션</title>
+<style>
+@keyframes textColorAnimation {
+	0% { color: blue; }
+	30% { color: green; }
+	100% { color: red; }
+}
+@keyframes textSizeAnimation {
+	from { font-size: 500%; }
+	to { font-size: 100% }
+}
+span {
+	animation-name: textColorAnimation;
+	animation-duration: 5s;
+	animation-iteration-count: infinite;
+	font-weight: bold;
+}
+h3 {
+	animation-name: textSizeAnimation;
+	animation-duration: 3s;
+	animation-iteration-count: infinite;
+}
+</style>
+</head>
+<body>
+
+<p>움직이는 <span>애니메이션</span> 만들기</p>
+
+<hr>
+
+<h3>꽝!</h3>
+
+</body>
+</html>
