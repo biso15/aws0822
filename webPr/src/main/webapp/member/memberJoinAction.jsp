@@ -11,7 +11,7 @@ scope는 4가지가 있음
 4. application : 프로그램이 살아있을때까지
 -->
 
-<jsp:setProperty name = "mv" property = "*" />  <!-- 아래 .getParameter 대체.-->
+<jsp:setProperty name = "mv" property = "*" />  <!-- 아래 .getParameter 대체. 바인딩 기술을 위해 변수이름을 같게함 -->
     
 <%
 
@@ -53,7 +53,7 @@ scope는 4가지가 있음
 	System.out.println(memberInHobby); */
 
   
-// 1. jsp 프로그래밍(날코딩 날코딩방법부터 -> 함수화 -> 객체화 방식)
+// 1. jsp 프로그래밍(날코딩방법부터 -> 함수화 -> 객체화 방식)
 // 2. java/jsp 프로그래밍(model1, model2 MVC방식으로 진화되는 방법)
 // 3. spring 프레임워크로 프로그래밍 하는 방법
 
