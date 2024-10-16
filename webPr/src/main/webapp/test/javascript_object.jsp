@@ -15,7 +15,7 @@
 	// 3. BOM객체(브라우저를 컨트롤할 수 있게 만들어진 객체)
 	
 	// 1. 코어객체
-	// 1-1 배열객체	
+	// 1-1 배열객체
 	// []로 표현할 수 있고, Array 객체로 할수도 있다
 	
 	// 배열객체 생성
@@ -48,6 +48,9 @@
 	week[4] = "금";
 	week[5] = "토";
 	week[6] = "일";
+	for (let i = 0; i < week.length; i++) {
+		document.write(week[i] + "<br>");
+	}
 	
 	// 몇개를 앞으로 만들지 모르겠다 할 때 배열 객체 생성
 	let day = new Array();
@@ -135,7 +138,7 @@
 	e = c.slice(1, 2);  // 1번 다음 자리부터 3번 자리까지 자르기
 	document.write("e값은? " + e + "<br>");
 	
-	e = c.sort();  // 졍렬하기
+	e = c.sort();  // 정렬하기
 	document.write("e값은? " + e + "<br>");
 	document.write("e값은? " + e + "<br>");
 	</script>

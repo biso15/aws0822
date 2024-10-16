@@ -10,7 +10,7 @@ public int memberInsert(Connection conn, String memberId, String memberPw, Strin
 
 	int value = 0;  // 메소드 지역변수 결과값을 담는다
 	String sql = "";
-	PreparedStatement pstmt = null;  // 쿼리 구문 클래스 선djs
+	PreparedStatement pstmt = null;  // 쿼리 구문 클래스 선언
 	try {
 		sql = "insert into " +
 				"member(memberid,memberpwd,membername,membergender,memberbirth,memberaddr,memberphone,memberemail,memberhobby) " + 
