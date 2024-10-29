@@ -1,9 +1,19 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="mvc.vo.BoardVo"%>
-    
+
 <%
-	BoardVo bv = (BoardVo)request.getAttribute("bv");  // 강제형변환. 양쪽 형을 맞춰준다
+	BoardVo bv = (BoardVo)request.getAttribute("bv");  // 강제형변환. 양쪽 형을 맞춰준다.
+	
+	String memberName = "";
+	if(session.getAttribute("memberName") != null) {
+		memberName = (String)session.getAttribute("memberName");
+	}
+	  // 현재 로그인 사람과 댓글쓴 사람의 번호가 같을때만 버튼이 나타남
+	int midx = 0;
+	if(session.getAttribute("midx") != null) {
+		midx = (int)session.getAttribute("midx");
+	}
 %>
 
 <!DOCTYPE html>
@@ -14,6 +24,34 @@
 <link href="../css/style2.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script> 
+window.onpageshow = function(event){   // onpageshow는 page 호출되면 캐시든 아니든 무조건 호출된다.
+	
+	// 뒤로가기로 접속한 경우
+    if (event.persisted || (window.performance && window.performance.navigation.type == 2)){
+        // 사파리 or 안드로이드에서 뒤로가기로 넘어온 경우 캐시를 이용해 화면을 보여주는데, 
+        // 이때 사파리의 경우 event.persisted 가 ture다. 
+        // 그외 브라우저(크롬 등)에서는 || 뒤에 있는 조건으로 뒤로가기인지 체크가 가능하다!
+       
+        const urlParams = new URL(location.href).searchParams;
+		const page = urlParams.get('page');
+		
+    	$.ajax({
+			type: "post",
+			url: "<%=request.getContextPath()%>/board/boardContent.aws",
+			dataType: "json",
+			data: {"isBack": "true", "page": page},
+			success: function(result) {
+                $(".viewcnt").text(result.viewcnt);
+			},
+			error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
+ 			    console.log("Error Status: " + status);
+			    console.log("Error Detail: " + error);
+			    console.log("Response: " + xhr.responseText);
+			}
+		}); 
+    }
+	
+};
 
 // 페이지 강제 새로고침
 window.addEventListener("pageshow", function(event) {
@@ -22,30 +60,80 @@ window.addEventListener("pageshow", function(event) {
     }
 });
 
-// 유효성 검사하기
-function check() {
-	  
-	  let fm = document.frm;
-	  
-	  if (fm.content.value == "") {
-		  alert("내용을 입력해주세요");
-		  fm.content.focus();
-		  return;
-	  }
-	  
-	  let ans = confirm("저장하시겠습니까?");
-	  
-	  if (ans == true) {
-		  fm.action="./detail.html";
-		  fm.method="post";
-		  fm.submit();
-	  }	  
-	  
-	  return;
+
+function commentDel(cidx) {
+	
+	let ans = confirm("삭제하시겠습니까?");
+	
+	if(ans == true) {
+		$.ajax({
+			type: "get",  // 전송방식
+			url: "<%=request.getContextPath()%>/comment/commentDeleteAction.aws?cidx="+cidx,
+			dataType: "json",
+			success: function(result) {
+				// alert("전송성공");
+				
+				$.boardCommentList();
+			},
+			error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
+				alert("전송실패");
+			}
+		});
+	}
+	
+	return;
 }
 
-// 추천수 업데이트
+
+
+//jquery로 만드는 함수
+$.boardCommentList = function() {
+	$.ajax({
+		type: "get",  // 전송방식
+		url: "<%=request.getContextPath()%>/comment/commentList.aws?bidx=<%=bv.getBidx()%>",
+		dataType: "json",  // 받는 형식. json 타입은 문서에서 {"key값": "value값", "key값" : "value값"} 형식으로 구성
+		success: function(result) {  // 결과가 넘어와서 성공했을 때 받는 영역
+			// alert("전송성공 테스트");			
+			
+			var str = "<table class='replyTable'><tr><th>번호</th><th>작성자</th><th>내용</th><th>날짜</th><th>DEL</th></tr>";
+
+			var strTr = "";
+			var index = result.length;
+			
+			$(result).each(function() {
+				
+				var btnn = "";
+				if (this.midx == "<%=midx%>") {
+					if(this.delyn == "N") {
+						btnn = "<button type='button' class='btn' onclick='commentDel(" + this.cidx + ")'>삭제</button>";
+					}
+				}
+				
+				strTr += "<tr><td class='cidx'>" + index-- + "</td>" + 
+						"<td class='cwriter'>" + this.cwriter + "</td>" + 
+						"<td class='ccontents'>" + this.ccontents + "</td>" + 
+						"<td class='writeday'>" + this.writeday + "</td>" + 
+						"<td class='delyn'>" + btnn + "</td></tr>";
+			});
+			
+			str = str + strTr + "</table>";
+			
+			$("#commentListView").html(str);
+		},
+	    error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
+			alert("전송실패 테스트");
+		    /* console.log("Error Status: " + status);
+		    console.log("Error Detail: " + error);
+		    console.log("Response: " + xhr.responseText); */
+		}
+	});
+}
+
+//추천수 업데이트
 $(document).ready(function() {
+
+	$.boardCommentList();
+	
 	$("#btn").click(function() {
 		// alert("추천버튼 클릭");
 		
@@ -65,7 +153,52 @@ $(document).ready(function() {
 			}
 		});
 	 })
-})
+	
+	$("#cmtBtn").click(function() {
+  		
+		let loginCheck = "<%=midx%>";
+		if(loginCheck == "" || loginCheck == null || loginCheck == "null" || loginCheck == 0) {
+			alert("로그인을 해주세요");
+			return;
+		}
+		
+		let cwriter = $("#cwriter").val();
+		let ccontents = $("#ccontents").val();
+			  
+		if (cwriter == "") {  // 페이지 접속시 로그인 체크를 해서 해당되는 경우는 거의 없지만, 혹시라도 우회해서 접속할 경우 거르기 위해 사용
+			alert("로그인을 해주세요");
+			$("#cwriter").focus();
+			return;
+			 
+		} else if (ccontents == "") {
+			alert("내용을 입력해주세요");
+			$("#ccontents").focus();
+			return;
+		}
+		
+		$.ajax({
+			type: "post",  // 전송방식
+			url: "<%=request.getContextPath()%>/comment/commentWriteAction.aws",
+			dataType: "json",  // 받는 형식. json 타입은 문서에서 {"key값": "value값", "key값" : "value값"} 형식으로 구성
+			data: {"cwriter": cwriter, "ccontents": ccontents, "bidx": <%=bv.getBidx()%>, "midx": <%=midx%> },
+			success: function(result) {  // 결과가 넘어와서 성공했을 때 받는 영역
+				// alert("전송성공 테스트");
+				$.boardCommentList();
+				if(result.value == 1) {
+					$("#ccontents").val("");
+				}
+			},
+		    error: function(xhr, status, error) {  // 결과가 실패했을 때 받는 영역
+				alert("전송실패 테스트");
+			   /*  console.log("Error Status: " + status);
+			    console.log("Error Detail: " + error);
+			    console.log("Response: " + xhr.responseText); */
+			}
+		});
+	})
+
+});
+
 </script>
 </head>
 <body>
@@ -79,32 +212,32 @@ $(document).ready(function() {
 		<input type="button" id="btn" value="추천(<%=bv.getRecom()%>)" class="btn">
 	</div>
 	<p class="write"><%=bv.getWriter()%> (<%=bv.getWriteday()%>)</p>
+	
 	<div class="content">
 		<%=bv.getContents()%>
 	</div>
-	<% if(bv.getFilename() != null) { %>
-	<a href="#" class="fileDown">
-		<img src="<%=bv.getFilename()%>">첨부파일입니다.
-	</a>
+	<% if(bv.getFilename() == null || bv.getFilename().equals("")) { } else { %>
+	<img src="<%=request.getContextPath()%>/image/<%=bv.getFilename()%>" class="fileImage">
+	<p><a href="<%=request.getContextPath()%>/board/boardDownload.aws?filename=<%=bv.getFilename()%>" class="fileDown">첨부파일다운로드</a></p>
 	<% } %>
 </article>
 	
 <div class="btnBox">
 	<a class="btn aBtn" href="<%=request.getContextPath()%>/board/boardModify.aws?bidx=<%=bv.getBidx()%>">수정</a>
-	<a class="btn aBtn" href="./delete.html">삭제</a>
-	<a class="btn aBtn" href="./comment.html">답변</a>
-	<a class="btn aBtn" href="./list.html">목록</a>
+	<a class="btn aBtn" href="<%=request.getContextPath()%>/board/boardDelete.aws?bidx=<%=bv.getBidx()%>">삭제</a>
+	<a class="btn aBtn" href="<%=request.getContextPath()%>/board/boardReply.aws?bidx=<%=bv.getBidx()%>">답변</a>
+	<button type="button" class="btn" onclick="history.back();">목록</button>
 </div>
 
 <article class="commentContents">
 	<form name="frm">
-		<p class="commentWriter">admin</p>	
-		<input type="text" name="content">
-		<button type="button" class="replyBtn" onclick="check();">댓글쓰기</button>
+		<input type="text" name="cwriter" id="cwriter" class="commentWriter" value="<%=memberName%>" readonly="readonly">
+		<input type="text" name="ccontents" id="ccontents">
+		<button type="button" class="replyBtn" id="cmtBtn">댓글쓰기</button>
 	</form>
 	
-	
-	<table class="replyTable">
+	<div id="commentListView"></div>	
+<!-- 	<table class="replyTable">
 		<tr>
 			<th>번호</th>
 			<th>작성자</th>
@@ -113,13 +246,13 @@ $(document).ready(function() {
 			<th>DEL</th>
 		</tr>
 		<tr>
-			<td>1</td>
-			<td>홍길동</td>
-			<td class="content">댓글입니다</td>
-			<td>2024-10-18</td>
+			<td class="cidx">1</td>
+			<td class="cwriter">홍길동</td>
+			<td class="ccontents">댓글입니다</td>
+			<td class="writeday">2024-10-18</td>
 			<td>sss</td>
 		</tr>
-	</table>
+	</table> -->
 </article>
 
 </body>

@@ -1,5 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ include file="/common/loginCheck.jsp" %>
+
+<%
+	String bidx = (String)request.getAttribute("bidx");	
+%>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,7 +28,7 @@ function check() {
 	  let ans = confirm("삭제하시겠습니까?");
 	  
 	  if (ans == true) {
-		  fm.action="./list.html";
+		  fm.action="<%=request.getContextPath()%>/board/boardDeleteAction.aws";
 		  fm.method="post";
 		  fm.submit();
 	  }	  
@@ -38,6 +44,7 @@ function check() {
 </header>
 
 <form name="frm">
+	<input type="hidden" name="bidx" value="<%=bidx%>">
 	<table class="writeTable">
 		<tr>
 			<th>비밀번호</th>
@@ -47,7 +54,7 @@ function check() {
 	
 	<div class="btnBox">
 		<button type="button" class="btn" onclick="check();">저장</button>
-		<a class="btn aBtn" href="./detail.html">취소</a>
+		<a class="btn aBtn" href="#" onclick="history.back();">취소</a>
 	</div>	
 </form>
 

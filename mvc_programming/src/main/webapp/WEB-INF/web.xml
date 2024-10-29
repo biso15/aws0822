@@ -21,5 +21,4 @@
 	<servlet-name>controller</servlet-name>
 	<url-pattern>*.aws</url-pattern>
   </servlet-mapping>
-
 </web-app>

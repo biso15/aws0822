@@ -10,6 +10,16 @@ ArrayList<BoardVo> alist = (ArrayList<BoardVo>)request.getAttribute("alist");  /
 
 PageMaker pm = (PageMaker)request.getAttribute("pm");
 
+// 게시글 번호
+int totalCount = pm.getTotalCount();
+
+// 검색
+String keyword = pm.getScri().getKeyword();
+String searchType = pm.getScri().getSearchType();
+
+String param = "keyword=" + keyword + "&searchType=" + searchType;
+
+// 뒤로가기
 String isBack = (String)request.getAttribute("isBack");
 
 %>
@@ -44,7 +54,7 @@ window.onpageshow = function(event){   // onpageshow는 page 호출되면 캐시
                 for (let i = 0; i < result.length; i++) {
                 	$(".viewcnt").eq(i).text(result[i]["viewcnt" + i]);
 					$(".recom").eq(i).text(result[i]["recom" + i]);
-                }					
+                }
 				
 				/*
 				let viewcntIdx = 0;
@@ -77,39 +87,60 @@ window.onpageshow = function(event){   // onpageshow는 page 호출되면 캐시
 <body>
 <header>
 	<h2 class="mainTitle">글목록</h2>
-	<form class="search">
-		<select>
-			<option>제목</option>
-			<option>작성자</option>
+	<form class="search" name="frm" action="<%=request.getContextPath()%>/board/boardList.aws" method="get">
+		<select name="searchType">
+			<option value="subject">제목</option>
+			<option value="writer">작성자</option>
 		</select>
-		<input type="text">
-		<button class="btn">검색</button>
+		<input type="text" name="keyword">
+		<button type="submit" class="btn">검색</button>
 	</form>
 </header>
 
 <section>	
 	<table class="listTable">
+		<colgroup>
+			<col width="8%">
+			<col>
+			<col width="10%">
+			<col width="8%">
+			<col width="8%">
+			<col width="18%">
+		</colgroup>
 		<tr>
-			<th id="recom">No</th>
+			<th>No</th>
 			<th>제목</th>
 			<th>작성자</th>
 			<th>조회</th>
 			<th>추천</th>
 			<th>날짜</th>
-		</tr>
-			
-		
-		<% for(BoardVo bv : alist) { %>
+		</tr>		
+		<% 
+		int num = totalCount - (pm.getScri().getPage() - 1) * pm.getScri().getPerPageNum();
+		for(BoardVo bv : alist) {
+			String lvlStr = "";
+			for(int i = 1; i <= bv.getLevel_(); i++) {
+				if (i > 1) {
+					lvlStr += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";			
+				}
+				
+				if (i == bv.getLevel_()) {
+					lvlStr += "└ &nbsp;";
+				}
+			}
+		%>
 		<tr>
-			<td><%= bv.getBidx() %></td>  <%-- <% out.println(bv.getBidx()); %> 이것과 같다. --%>
-			<td class="title"><a href="<%=request.getContextPath()%>/board/boardContents.aws?bidx=<%=bv.getBidx()%>"><%= bv.getSubject() %></a></td>
+			<td><%= num %></td>  <%-- <% out.println(num); %> 이것과 같다. --%>
+			<td class="title"><a href="<%=request.getContextPath()%>/board/boardContents.aws?bidx=<%=bv.getBidx()%>"><%=lvlStr%><%= bv.getSubject() %></a></td>
 			<td><%= bv.getWriter() %></td>
 			<td class="viewcnt"><% if(isBack == null) out.println(bv.getViewcnt()); %></td>
 			<td class="recom"><% if(isBack == null) out.println(bv.getRecom()); %></td>
 			<td><%= bv.getWriteday() %></td>
 		</tr>
-		<% } %>
-		
+		<% 
+			num --;
+		}
+		%>
 	</table>
 	
 	<div class="btnBox">
@@ -119,15 +150,15 @@ window.onpageshow = function(event){   // onpageshow는 page 호출되면 캐시
 	<div class="page">
 		<ul>
 		<% if(pm.isPrev() == true) { %>
-			<li><a href="<%=request.getContextPath()%>/board/boardList.aws?page=<%=pm.getStartPage() - 1%>">◀</a></li>
+			<li><a href="<%=request.getContextPath()%>/board/boardList.aws?page=<%=pm.getStartPage() - 1%>&<%=param%>">◀</a></li>
 		<% } %>
 		
 		<% for(int i = pm.getStartPage(); i <= pm.getEndPage(); i++) { %>
-			<li <% if(i == pm.getCri().getPage()) { %>class="on"<% } %>><a href="<%= request.getContextPath() %>/board/boardList.aws?page=<%=i%>"><%= i %></a></li>
+			<li <% if(i == pm.getScri().getPage()) { %>class="on"<% } %>><a href="<%= request.getContextPath() %>/board/boardList.aws?page=<%=i%>&<%=param%>"><%= i %></a></li>
 		<% } %>
 		
 		<% if(pm.isNext() == true && pm.getEndPage() > 0) { %>  <!-- && pm.getEndPage() > 0 : 게시물이 0개일 경우 endPage가 0이 됨. 이때는 버튼이 없어야 함 -->
-			<li><a href="<%=request.getContextPath()%>/board/boardList.aws?page=<%=pm.getEndPage() + 1%>">▶</a></li>
+			<li><a href="<%=request.getContextPath()%>/board/boardList.aws?page=<%=pm.getEndPage() + 1%>&<%=param%>">▶</a></li>
 		<% } %>
 		</ul>
 	</div>

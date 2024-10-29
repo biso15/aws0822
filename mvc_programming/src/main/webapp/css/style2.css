@@ -1,7 +1,7 @@
 @charset "UTF-8";
 
 * { line-height: 1.5; font-size: 12px; margin: 0; padding: 0; }
-body { width: 800px; margin: 0 auto; }
+body { width: 800px; margin: 0 auto; padding-bottom: 20px; }
 a { text-decoration: none; color: inherit; }
 select { cursor: pointer; border-color: lightgray; height: 20px; width: 70px; }
 textarea { border-color: lightgray; padding: 0 5px; }
@@ -23,6 +23,8 @@ table th, table td { padding: 5px 10px; }
 
 .listTable th, .listTable td { text-align: center; border-bottom: 1px solid lightgray; }
 .listTable .title { text-align: left; }
+.listTable .title a { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 364px; 
+	display: inline-block; }
 
 .writeTable input[type="text"], .writeTable textarea { width: 80%; }
 .writeTable input[name="writer"] { width: auto; }
@@ -51,12 +53,13 @@ table th, table td { padding: 5px 10px; }
 .detailContents { border-bottom: 1px solid black; padding: 10px; }
 .detailContents .contentTitle { float: left; }
 .detailContents .detailTitle .btn { float: right; width: 60px; }
-.detailContents .write { clear: both; }
+.detailContents .write { clear: both; border-bottom: 1px solid black; padding-bottom: 10px; }
 .detailContents .content { padding: 20px 0; }
-.detailContents .fileDown img { margin-right: 10px; }
+.detailContents .fileImage { max-width: 100%; margin-bottom: 5px; }
+.detailContents .fileDown:hover { color: orange; }
 
 .commentContents form[name="frm"] { margin-bottom: 40px; }
-.commentContents .commentWriter { border: 1px solid lightgray; display: inline-block; padding: 0 100px; }
+.commentContents .commentWriter { border: 1px solid lightgray; display: inline-block; padding: 0 50px; width: 100px; }
 .commentContents input { width: 600px; height: 25px; float: left; }
 .commentContents .replyBtn { background: #555; width: 188px; float: left; border: none; cursor: pointer;
 	color: white; height: 27px; }

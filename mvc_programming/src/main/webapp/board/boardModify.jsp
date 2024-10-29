@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="mvc.vo.BoardVo"%>
+<%@ include file="/common/loginCheck.jsp" %>
     
 <%
 	BoardVo bv = (BoardVo)request.getAttribute("bv");
@@ -42,10 +43,12 @@ function check() {
 	  if (ans == true) {
 		  fm.action="<%=request.getContextPath()%>/board/boardModifyAction.aws";
 		  fm.method="post";
+		  fm.enctype="multipart/form-data";  // 인코딩 타입. 문자 뿐만 아니라 이미지같은 파일도 포함
 		  fm.submit();
 	  }
 	  
 	  return;
+	  
 }
 
 </script>
@@ -76,13 +79,13 @@ function check() {
 		</tr>
 		<tr>
 			<th>첨부파일</th>
-			<td><input type="file" name="uploadfile"></td>
+			<td><input type="file" name="filename"></td>
 		</tr>
 	</table>
 	
 	<div class="btnBox">
 		<button type="button" class="btn" onclick="check();">저장</button>
-		<a class="btn aBtn" href="./detail.html">취소</a>
+		<button type="button" class="btn" onclick="history.back();">취소</button>
 	</div>	
 </form>
 

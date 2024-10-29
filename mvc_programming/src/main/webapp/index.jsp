@@ -20,6 +20,17 @@ String memberId = "";
 String memberName = "";
 String alt = "";
 String logMsg = "";
+
+
+// 로그인 하드코딩 ...
+/* String mid = "hong";
+midx = 1;
+memberName = "이름hong";
+session.setAttribute("mid", mid);
+session.setAttribute("midx", midx);
+session.setAttribute("memberName", memberName); */
+
+
 if (session.getAttribute("midx") != null) {  // 로그인이 되었으면
 	midx = (int)session.getAttribute("midx");
 	memberId = (String)session.getAttribute("mid");

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 import mvc.dbcon.Dbconn;
 import mvc.vo.BoardVo;
-import mvc.vo.Criteria;
+import mvc.vo.SearchCriteria;
 
 public class BoardDao {
 
@@ -21,13 +21,23 @@ public class BoardDao {
 	}
 	
 	// 게시판 목록 조회
-	public ArrayList<BoardVo> boardSelectAll(Criteria cri) {
-		int page = cri.getPage();  // 페이지 번호
-		int perPageNum = cri.getPerPageNum();  // 화면 노출 리스트 갯수
-	
+	public ArrayList<BoardVo> boardSelectAll(SearchCriteria scri) {
+		int page = scri.getPage();  // 페이지 번호
+		int perPageNum = scri.getPerPageNum();  // 화면 노출 리스트 갯수
+		
+		// 키워드가 존재한다면 like 구문을 활용한다
+		String str = "";
+		String keyword = scri.getKeyword();
+		String searchType = scri.getSearchType();
+		
+		if(!scri.getKeyword().equals("")) {
+			
+			 str = "and " + searchType + " like concat('%', '" + keyword + "', '%')";
+		}
+		
 		ArrayList<BoardVo> alist = new ArrayList<BoardVo>();  // ArrayList 컬렉션 객체에 BoardVo를 담겠다. BoardVo는 컬럼값을 담겠다.
 		
-		String sql = "select * from board  where delyn='N' order by originbidx desc, depth limit ?, ?";
+		String sql = "select * from board where delyn='N' " + str + " order by originbidx desc, depth limit ?, ?";
 		ResultSet rs = null;
 		
 		try {
@@ -43,6 +53,7 @@ public class BoardDao {
 			int viewcnt;
 			int recom;
 			String writeday;
+			int level_;
 			
 			while(rs.next()) {
 				bidx = rs.getInt("bidx");
@@ -51,6 +62,7 @@ public class BoardDao {
 				viewcnt = rs.getInt("viewcnt");
 				recom = rs.getInt("recom");
 				writeday = rs.getString("writeday");
+				level_ = rs.getInt("level_");
 				
 				BoardVo bv = new BoardVo();
 				bv.setBidx(bidx);
@@ -59,6 +71,7 @@ public class BoardDao {
 				bv.setViewcnt(viewcnt);
 				bv.setRecom(recom);
 				bv.setWriteday(writeday);
+				bv.setLevel_(level_);
 				
 				alist.add(bv);
 			}
@@ -75,16 +88,28 @@ public class BoardDao {
 				e.printStackTrace();
 			}
 		}
+			
 		return alist;
 	}
 	
 	// 게시글 전체 갯수 구하기
-	public int boardTotalCount() {
+	public int boardTotalCount(SearchCriteria scri) {
 		
 		int value = 0;
 		
 		// 1. 쿼리 만들기
-		String sql = "select count(*) as cnt from board where delyn='N'";
+		
+		// 키워드가 존재한다면 like 구문을 활용한다
+		String str = "";
+		String keyword = scri.getKeyword();
+		String searchType = scri.getSearchType();
+		
+		if(!scri.getKeyword().equals("")) {
+			
+			 str = "and " + searchType + " like concat('%', '" + keyword + "', '%')";
+		}
+		
+		String sql = "select count(*) as cnt from board where delyn='N'" + str;
 				
 		// 2. conn 객체 안에 있는 구문 클래스 호출하기
 		// 3. DB 컬럼값을 받는 전용 클래스 ResultSet 호출(ResultSet 특징은 데이터를 그대로 복사하기 때문에 전달이 빠름)
@@ -122,10 +147,12 @@ public class BoardDao {
 		String contents = bv.getContents();
 		String writer = bv.getWriter();
 		String password = bv.getPassword();
-		int midx = bv. getMidx();		
+		int midx = bv.getMidx();
+		String filename = bv.getFilename();
+		String ip = bv.getIp();
 		
-		String sql = "insert into board(originbidx, depth, level_, subject, contents, writer, password, midx) "
-				+ "values(null, 0, 0, ?, ?, ?, ?, ?)";
+		String sql = "insert into board(originbidx, depth, level_, subject, contents, writer, password, midx, filename, ip) "
+				+ "values(null, 0, 0, ?, ?, ?, ?, ?, ?, ?)";
 				
 		String sql2 = "update board set originbidx = (select A.maxbidx from (select max(bidx) as maxbidx from board) A) "
 				+ "where bidx = (select A.maxbidx from (select max(bidx) as maxbidx from board) A)";
@@ -138,6 +165,8 @@ public class BoardDao {
 			pstmt.setString(3, writer);
 			pstmt.setString(4, password);
 			pstmt.setInt(5, midx);
+			pstmt.setString(6, filename);
+			pstmt.setString(7, ip);
 			
 			int exec = pstmt.executeUpdate();  // 실행되면 1, 안되면 0
 
@@ -246,15 +275,17 @@ public class BoardDao {
 	
 		int value = 0;
 		
-		String sql = "update board set subject = ?, contents = ?, writer = ?, modifyday = now() where bidx = ? and password = ?";
+		String sql = "update board set subject = ?, contents = ?, writer = ?, modifyday = now(), filename = ?, ip = ? where bidx = ? and password = ?";
 		try {
 			
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, bv.getSubject());
 			pstmt.setString(2, bv.getContents());
 			pstmt.setString(3, bv.getWriter());
-			pstmt.setInt(4, bv.getBidx());
-			pstmt.setString(5, bv.getPassword());
+			pstmt.setString(4, bv.getFilename());
+			pstmt.setString(5, bv.getIp());
+			pstmt.setInt(6, bv.getBidx());
+			pstmt.setString(7, bv.getPassword());
 			
 			value = pstmt.executeUpdate();
 						
@@ -275,7 +306,7 @@ public class BoardDao {
 	}
 	
 	// 조회수 업데이트하기
-	public int boardViewCntUpdatet(int bidx) {
+	public int boardViewCntUpdate(int bidx) {
 		
 		int value = 0;
 		
@@ -361,4 +392,101 @@ public class BoardDao {
 				
 	}
 	
+	// 비밀번호 확인하기
+	public int boardDelete(int bidx, String password) {
+	
+		int value = 0;		
+		String sql = "update board set delyn = 'Y' where bidx = ? and password = ?";
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, bidx);
+			pstmt.setString(2, password);
+			value = pstmt.executeUpdate();  // 성공하면 1. 실패하면 0
+			
+		} catch (SQLException e) {			 
+			 e.printStackTrace();
+			 
+		} finally {
+			try {
+				pstmt.close();
+				conn.close();
+				
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+				
+		return value;
+	}	
+
+	// 답글 추가하기
+	public int boardReply(BoardVo bv) {
+		
+		int maxbidx = 0;
+		
+		String sql = "update board set depth = depth + 1 where originbidx = ? and depth > ?";
+		
+		String sql2 = "insert into board(originbidx, depth, level_, subject, contents, writer, midx, filename, password, ip)" +
+					  "values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		
+		String sql3 = "select max(bidx) as maxbidx from board where originbidx = ?";
+
+		try {
+
+			conn.setAutoCommit(false);  // 수동커밋
+			
+			// 등록되어있는 답변들을 뒤로 밀기			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, bv.getOriginbidx());
+			pstmt.setInt(2, bv.getDepth());
+			int exec = pstmt.executeUpdate();  // 실행되면 1이상, 안되면 0
+			
+			// 작성한 답변을 추가하기
+			pstmt = conn.prepareStatement(sql2);
+			pstmt.setInt(1, bv.getOriginbidx());
+			pstmt.setInt(2, bv.getDepth() + 1);
+			pstmt.setInt(3, bv.getLevel_() + 1);
+			pstmt.setString(4, bv.getSubject());
+			pstmt.setString(5, bv.getContents());
+			pstmt.setString(6, bv.getWriter());
+			pstmt.setInt(7, bv.getMidx());
+			pstmt.setString(8, bv.getFilename());
+			pstmt.setString(9, bv.getPassword());
+			pstmt.setString(10, bv.getIp());
+			int exec2 = pstmt.executeUpdate();
+
+			// 작성한 답글의 bidx를 구하기 -> 글작성 성공시 보여줄 페이지를 위해서 필요
+			ResultSet rs = null;
+			pstmt = conn.prepareStatement(sql3);
+			pstmt.setInt(1, bv.getOriginbidx());
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				maxbidx = rs.getInt("maxbidx");
+			}			
+
+			conn.commit();  // 일괄처리 커밋
+			
+			conn.setAutoCommit(true);  // 자동커밋으로 다시 변경
+
+		} catch (SQLException e) {
+			 try {
+		            conn.rollback();   // 실행중 오류발생시 롤백처리
+		         } catch (SQLException e1) {
+		            e1.printStackTrace();
+		         }
+			 e.printStackTrace();
+			 
+		} finally {
+			try {  // 각 개체도 소멸시키고 DB연결을 끊는다.
+				pstmt.close();
+				conn.close();
+				
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return maxbidx;
+	}
 }
